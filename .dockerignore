@@ -1,0 +1,10 @@
+.dockerignore
+.gitignore
+.git
+Dockerfile
+docker-compose.yml
+.idea
+kubernetes-volume-backup.iml
+.gradle
+build
+target

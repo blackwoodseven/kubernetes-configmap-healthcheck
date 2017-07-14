@@ -1,0 +1,16 @@
+version: "2.1"
+services:
+  kubernetes-configmap-healthcheck:
+    build: .
+    environment:
+      VOLUMES: /mnt/some-volume
+    volumes:
+    - .:/kubernetes-configmap-healthcheck
+    - ./testVolume:/mnt/some-volume
+    ports:
+    - "8000:80"
+  test:
+    build: .
+    command: gradle -t test
+    volumes:
+    - .:/kubernetes-configmap-healthcheck

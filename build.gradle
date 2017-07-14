@@ -1,0 +1,82 @@
+group 'com.blackwoodseven.kubernetes'
+
+buildscript {
+    ext.kotlin_version = '1.1.3'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4'
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+applicationDefaultJvmArgs = [
+
+]
+
+repositories {
+    mavenCentral()
+    maven { url 'http://dl.bintray.com/jetbrains/spek' }
+    jcenter()
+    maven { url "http://dl.bintray.com/kotlin/ktor" }
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'io.github.microutils:kotlin-logging:1.4.5'
+    compile 'org.slf4j:slf4j-simple:1.7.25'
+    compile 'com.google.jimfs:jimfs:1.1'
+
+    compile 'org.jetbrains.ktor:ktor-core:0.3.3'
+    compile 'org.jetbrains.ktor:ktor-netty:0.3.3'
+
+    // Kotlin-test
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+    // Spek
+    testCompile 'org.jetbrains.spek:spek-api:1.1.2'
+    testCompile 'org.junit.platform:junit-platform-launcher:1.0.0-M4'
+    testRuntime 'org.jetbrains.spek:spek-junit-platform-engine:1.1.2'
+
+    // Hamkrest
+    testCompile "com.natpryce:hamkrest:1.4.1.0"
+
+    // Mockito
+    testCompile "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.blackwoodseven.kubernetes.configmap_healthcheck.MainKt'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+mainClassName = 'com.blackwoodseven.kubernetes.configmap_healthcheck.MainKt'
+
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
+}
+
+task downloadDependencies(type: Exec) {
+    configurations.testRuntime.files
+    commandLine 'echo', 'Downloaded all dependencies'
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
